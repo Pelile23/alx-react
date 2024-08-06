@@ -1,31 +1,42 @@
-import React from "react";
-import { shallow } from "enzyme";
-import WithLogging from "./WithLogging";
+import React from 'react';
+import chai, { expect } from 'chai';
+import Adapter from 'enzyme-adapter-react-16';
+import { configure, mount } from 'enzyme';
+import WithLogging from './WithLogging.js';
+import sinonChai from 'sinon-chai';
+import { spy } from 'sinon';
+import Login from '../Login/Login.js';
 
-const TestComponent = () => <p>Test Component</p>;
+chai.use(sinonChai);
 
-describe("WithLogging tests", () => {
-  it("should call console.log on mount and dismount", () => {
-    const spy = jest.spyOn(console, "log").mockImplementation();
-    const NewComponent = WithLogging(TestComponent);
-    const wrapper = shallow(<NewComponent />);
+configure({
+	adapter: new Adapter()
+});
 
-    expect(spy).toBeCalledTimes(1);
-    wrapper.unmount();
-    expect(spy).toBeCalledTimes(2);
-    spy.mockRestore();
-  });
+let log = spy(console, 'log');
 
-  it("should log out the right message on mount and on unmount", () => {
-    const spy = jest.spyOn(console, "log").mockImplementation();
-    const NewComponent = WithLogging(TestComponent);
-    const wrapper = shallow(<NewComponent />);
+describe("Testing the <WithLogging /> Component", () => {
 
-    expect(spy).toBeCalledTimes(1);
-    expect(spy).toBeCalledWith("Component TestComponent is mounted");
-    wrapper.unmount();
-    expect(spy).toHaveBeenCalledTimes(2);
-    expect(spy).toBeCalledWith("Component TestComponent is going to unmount");
-    spy.mockRestore();
-  });
+	it("Renders the correct children with pure html as a child", () => {
+		let wrapper = mount(
+			<WithLogging>
+				<p>simple phrase</p>
+			</WithLogging>
+		);
+		expect(log).to.have.been.calledWith('Component Component is mounted');
+		wrapper.unmount();
+		expect(log).to.have.been.calledWith('Component Component is going to unmount');
+	});
+
+	it("Renders the correct children with <Login /> Component as a child", () => {
+		let wrapper = mount(
+			<WithLogging>
+				<Login />
+			</WithLogging>
+		);
+		expect(log).to.have.been.calledWith('Component Login is mounted');
+		wrapper.unmount();
+		expect(log).to.have.been.calledWith('Component Login is going to unmount');
+	});
+
 });

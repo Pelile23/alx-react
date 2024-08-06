@@ -1,38 +1,65 @@
-import React from "react";
-import PropTypes from "prop-types";
+import React, { PureComponent, Fragment } from 'react';
+import PropTypes from 'prop-types';
+import { StyleSheet, css } from 'aphrodite';
 
-class NotificationItem extends React.PureComponent {
-  render() {
-    const { type, value, html, markAsRead, id } = this.props;
-    return (
-      <>
-        {type && value ? (
-          <li onClick={() => markAsRead(id)} data-notification-type={type}>
-            {value}
-          </li>
-        ) : null}
-        {html ? <li onClick={() => markAsRead(id)} data-urgent dangerouslySetInnerHTML={{ __html: html }}></li> : null}
-      </>
-    );
-  }
-}
+class NotificationItem extends PureComponent {
+	render() {
+		let {
+			id,
+			type,
+			value,
+			html,
+			markAsRead
+		} = this.props;
+
+		let liStyle = (type === 'urgent') ? styles.urgentNotif : styles.defaultNotif;
+
+		return (
+			<Fragment>
+				{
+					html !== undefined &&
+					<li
+						className={css(liStyle)}
+						onClick={() => markAsRead(id)}
+						data-priority-type={type}
+						dangerouslySetInnerHTML={html}
+					/>
+				}
+				{
+					html === undefined &&
+					<li
+						className={css(liStyle)}
+						onClick={() => markAsRead(id)}
+						data-priority-type={type}
+					>
+						{value}
+					</li>
+				}
+			</Fragment>
+		);
+	};
+};
+
+const styles = StyleSheet.create({
+	defaultNotif: {
+		color: 'blue',
+	},
+	urgentNotif: {
+		color: 'red',
+	},
+});
 
 NotificationItem.propTypes = {
-  type: PropTypes.string.isRequired,
-  value: PropTypes.string,
-  __html: PropTypes.shape({
-    html: PropTypes.string,
-  }),
-  markAsRead: PropTypes.func,
-  id: PropTypes.number,
+	html: PropTypes.shape({
+		__html: PropTypes.string,
+	}),
+	type: PropTypes.string.isRequired,
+	value: PropTypes.string,
+	markAsRead: PropTypes.func,
 };
 
 NotificationItem.defaultProps = {
-  type: "default",
-  markAsRead: () => {
-    console.log("empty func");
-  },
-  id: 0,
+	type: "default",
 };
 
 export default NotificationItem;
