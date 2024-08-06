@@ -1,77 +1,64 @@
-import React, { PureComponent, Fragment } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import { StyleSheet, css } from 'aphrodite';
 
-class NotificationItem extends PureComponent {
-	render() {
-		let {
-			id,
-			type,
-			value,
-			html,
-			markAsRead
-		} = this.props;
+class NotificationItem extends React.PureComponent {
+  constructor(props) {
+    super(props);
+    this.selected_style = this.props.type === 'default' ?  itemStyles.default : itemStyles.urgent;
+  }
 
-		let liStyle = (type === 'urgent') ? styles.urgentNotif : styles.defaultNotif;
+  render() {
+    return (
+      this.props.value ? 
+      <li
+      data-notification-type={this.props.type}
+      onClick={() => this.props.markAsRead(this.props.id)}
+      className={css(this.selected_style, itemStyles.li)}
+      >{this.props.value}</li> 
+      :
+      <li
+      data-notification-type={this.props.type}
+      dangerouslySetInnerHTML={this.props.html}
+      onClick={() => this.props.markAsRead(this.props.id)}
+      className={css(this.selected_style, itemStyles.li)}
+      ></li>
+    );
+  }
+}
 
-		return (
-			<Fragment>
-				{
-					html !== undefined &&
-					<li
-						className={css(liStyle)}
-						onClick={() => markAsRead(id)}
-						data-priority-type={type}
-						dangerouslySetInnerHTML={html}
-					/>
-				}
-				{
-					html === undefined &&
-					<li
-						className={css(liStyle)}
-						onClick={() => markAsRead(id)}
-						data-priority-type={type}
-					>
-						{value}
-					</li>
-				}
-			</Fragment>
-		);
-	};
-};
-
-const styles = StyleSheet.create({
-	defaultNotif: {
-		color: 'blue',
-		padding: '10px 8px',
-		'@media (max-width: 900px)': {
-			width: '100%',
-			fontSize: '20px',
-			borderBottom: '1px solid black',
-		},
+const itemStyles = StyleSheet.create({
+  li: {
+    '@media (max-width: 900px)': {
+      listStyle: 'none',
+      borderBottom: '1px solid black',
+      padding: '10px 8px',
+      margin: 0,
+      width: '100%',
+      fontSize: '20px'
+    }
+  },
+	urgent: {
+		color: 'red'
 	},
-	urgentNotif: {
-		color: 'red',
-		padding: '10px 8px',
-		'@media (max-width: 900px)': {
-			width: '100%',
-			fontSize: '20px',
-			borderBottom: '1px solid black',
-		},
-	},
-});
 
-NotificationItem.propTypes = {
-	html: PropTypes.shape({
-		__html: PropTypes.string,
-	}),
-	type: PropTypes.string.isRequired,
-	value: PropTypes.string,
-	markAsRead: PropTypes.func,
-};
+	default: {
+		color: 'blue'
+	}
+})
 
 NotificationItem.defaultProps = {
-	type: "default",
+  type: 'default',
+  markAsRead: () => {},
+	id: 0
+};
+
+NotificationItem.propTypes = {
+  html: PropTypes.shape({__html: PropTypes.string}),
+  type: PropTypes.string.isRequired,
+  value: PropTypes.string,
+  markAsRead: PropTypes.func,
+  id: PropTypes.number
 };
 
 export default NotificationItem;

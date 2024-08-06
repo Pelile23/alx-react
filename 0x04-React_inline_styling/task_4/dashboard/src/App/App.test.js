@@ -1,76 +1,74 @@
 import React from 'react';
-import { expect } from 'chai';
-import Adapter from 'enzyme-adapter-react-16';
-import { shallow, configure, mount } from 'enzyme';
+import { shallow, mount } from 'enzyme';
+import { jest } from '@jest/globals';
 import App from './App';
-import Header from '../Header/Header';
-import Login from '../Login/Login';
-import Footer from '../Footer/Footer';
-import Notifications from '../Notifications/Notifications';
-import CourseList from '../CourseList/CourseList';
-import { StyleSheetTestUtils, } from 'aphrodite';
+import { StyleSheetTestUtils } from 'aphrodite';
 
-configure({adapter: new Adapter()});
+describe('Test App.js', () => {
+  let wrapper;
 
-describe("Testing the <App /> Component", () => {
-	
-	let wrapper;
+  beforeEach(() => {
+    StyleSheetTestUtils.suppressStyleInjection();
+    wrapper = shallow(<App />);
+  });
 
-	beforeEach(() => {
-		wrapper = shallow(<App />);
-		StyleSheetTestUtils.suppressStyleInjection();
-	});
+  it('Renders App without crashing', () => {
+    expect(wrapper.exists());
+  });
 
-	afterEach(() => {
-		StyleSheetTestUtils.clearBufferAndResumeStyleInjection();
-	});
+  it('App component contains Notifications component', () => {
+    expect(wrapper.find("Notifications")).toHaveLength(1);
+  });
 
-	it("<App /> is rendered without crashing", () => {
-		expect(wrapper).to.not.be.an('undefined');
-	});
+  it('App component contains Header component', () => {
+    expect(wrapper.find("Header")).toHaveLength(1);
+  });
 
-	it("<App /> contains the <Notifications /> Component", () => {
-		expect(wrapper.find(Notifications)).to.have.lengthOf(1);
-	});
+  it('App component contains Login component', () => {
+    expect(wrapper.find("Login")).toHaveLength(1);
+  });
 
-	it("<App /> contains the <Header /> Component", () => {
-		expect(wrapper.contains(<Header />)).to.equal(true);
-	});
+  it('App component contains Footer component', () => {
+    expect(wrapper.find("Footer")).toHaveLength(1);
+  });
 
-	it("<App /> contains the <Login /> Component", () => {
-		expect(wrapper.contains(<Login />)).to.equal(true);
-	});
-
-	it("<App /> contains the <Footer /> Component", () => {
-		expect(wrapper.contains(<Footer />)).to.equal(true);
-	});
-
-	it("<App /> doesn't contain <CourseList />", () => {
-		expect(wrapper.find(CourseList)).to.have.lengthOf(0);
-	});
-
+  it('test to check that CourseList is not displayed inside App', () => {
+    expect(wrapper.find("CourseList")).toHaveLength(0);
+  });
 });
 
-describe("Testing the <App /> when isLoggedIn is true", () => {
+describe("Testing <App isLoggedIn={true} />", () => {
+  let wrapper;
 
-	let props = {
-		isLoggedIn: true,
-	};
+  beforeEach(() => {
+    StyleSheetTestUtils.suppressStyleInjection();
+    wrapper = shallow(<App isLoggedIn={true}/>);
+  });
 
-	let component = shallow(<App {...props} />);
+  it("the Login component is not included", () => {
+    expect(wrapper.find('Login')).toHaveLength(0);
+  });
 
-	expect(component.contains(<Login />)).to.equal(false);
-	expect(component.find(CourseList)).to.have.lengthOf(1);
+  it("the CourseList component is included", () => {
+    expect(wrapper.find('CourseList').exists());
+  });
 });
 
-describe('logOut alerts with correct string', () => {
-	const myLogOut = jest.fn(() => undefined);
-	const appComp = mount(<App logOut={myLogOut} />);
-	const log = jest.spyOn(console, 'log');
+describe("Testing <App logOut={function} />", () => {
+  beforeEach(() => {
+    StyleSheetTestUtils.suppressStyleInjection();
+  });
 
-	expect(appComp.props.logOut);
-	expect(log);
-
-	jest.restoreAllMocks();
-
+  it("verify that when the keys control and h are pressed the logOut function, passed as a prop, is called and the alert function is called with the string Logging you out", () => {
+    const wrapper = mount(<App logOut={()=>{console.log("ctrl and h are pressed")}}/>);
+    window.alert = jest.fn();
+    const inst = wrapper.instance();
+    const logout = jest.spyOn(inst, 'logOut');
+    const alert = jest.spyOn(window, 'alert');
+    const event = new KeyboardEvent('keydown', {bubbles:true, ctrlKey: true, key: 'h'});
+    document.dispatchEvent(event);
+    expect(alert).toBeCalledWith("Logging you out");
+    expect(logout).toBeCalled();
+    alert.mockRestore();
+  });
 });

@@ -1,51 +1,36 @@
-import React from 'react';
-import chai, { expect } from 'chai';
-import Adapter from 'enzyme-adapter-react-16';
-import { configure, mount } from 'enzyme';
-import WithLogging from './WithLogging.js';
-import sinonChai from 'sinon-chai';
-import { spy } from 'sinon';
-import Login from '../Login/Login.js';
-import { StyleSheetTestUtils, } from 'aphrodite';
+import React from "react";
+import { mount } from 'enzyme';
+import { jest } from '@jest/globals';
+import WithLogging from "./WithLogging";
+import Login from '../Login/Login';
+import { StyleSheetTestUtils } from "aphrodite";
 
-chai.use(sinonChai);
+describe("Testing WithLogging HOC", () => {
 
-configure({
-	adapter: new Adapter()
-});
+  beforeEach(() => {
+    StyleSheetTestUtils.suppressStyleInjection();
+  });
 
-let log = spy(console, 'log');
+  it("should make sure console.log was called on mount and on unmount with Component when the wrapped element is pure html", () => {
+    console.log = jest.fn();
+    const Hoc = WithLogging(() => <p>Hello there</p>);
+    const comp = <Hoc title="hello" />;
+    let wrapper = mount(comp);
+    expect(console.log).toBeCalledWith('Component Component is mounted');
+    wrapper.unmount();
+    expect(console.log).toBeCalledWith('Component Component is going to unmount');
+    jest.restoreAllMocks();
+  });
 
-describe("Testing the <WithLogging /> Component", () => {
-
-	beforeEach(() => {
-		StyleSheetTestUtils.suppressStyleInjection();
-	});
-
-	afterEach(() => {
-		StyleSheetTestUtils.clearBufferAndResumeStyleInjection();
-	});
-
-	it("Renders the correct children with pure html as a child", () => {
-		let wrapper = mount(
-			<WithLogging>
-				<p>simple phrase</p>
-			</WithLogging>
-		);
-		expect(log).to.have.been.calledWith('Component Component is mounted');
-		wrapper.unmount();
-		expect(log).to.have.been.calledWith('Component Component is going to unmount');
-	});
-
-	it("Renders the correct children with <Login /> Component as a child", () => {
-		let wrapper = mount(
-			<WithLogging>
-				<Login />
-			</WithLogging>
-		);
-		expect(log).to.have.been.calledWith('Component Login is mounted');
-		wrapper.unmount();
-		expect(log).to.have.been.calledWith('Component Login is going to unmount');
-	});
+  it("should make sure console.log was called on mount and on unmount with the name of the component when the wrapped element is the Login component", () => {
+    console.log = jest.fn();
+    const Hoc = WithLogging(Login);
+    const comp = <Hoc/>;
+    let wrapper = mount(comp);
+    expect(console.log).toBeCalledWith('Component Login is mounted');
+    wrapper.unmount();
+    expect(console.log).toBeCalledWith('Component Login is going to unmount');
+    jest.restoreAllMocks();
+  });
 
 });

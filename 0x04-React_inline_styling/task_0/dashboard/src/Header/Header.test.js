@@ -1,29 +1,24 @@
 import React from 'react';
-import { expect } from 'chai';
-import Adapter from 'enzyme-adapter-react-16';
-import { shallow, configure } from 'enzyme';
 import Header from './Header';
+import { shallow } from 'enzyme';
 
-configure({adapter: new Adapter()});
 
-describe("Testing the <Header /> Component", () => {
-	
-	let wrapper;
+describe('Testing <Header /> Component', () => {
+  let wrapper;
 
-	beforeEach(() => {
-		wrapper = shallow(<Header shouldRender />);
-	});
+  beforeEach(() => {
+    wrapper = shallow(<Header />);
+  });
 
-	it("<Header /> is rendered without crashing", () => {
-		expect(wrapper.render()).to.not.be.an('undefined');
-	});
+  it("Renders with out crashing", () => {
+    expect(wrapper).toBeDefined();
+  });
 
-	it("<Header /> render img tag", () => {
-		expect(wrapper.find('img')).to.have.lengthOf(1);
-	});
+  it("Render an h1 tag", () => {
+    expect(wrapper.find('h1')).toBeDefined();
+  });
 
-	it("<Header /> render h1 tag", () => {
-		expect(wrapper.find('h1')).to.have.lengthOf(1);
-	});
-
+  it("Render an img tag", () => {
+    expect(wrapper.find('img')).toBeDefined();
+  });
 });

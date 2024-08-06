@@ -3,30 +3,41 @@ import logo from '../assets/holberton_logo.jpg';
 import { StyleSheet, css } from 'aphrodite';
 
 function Header() {
-	return (
-		<div className={css(styles.appHeader)}>
-			<img
-				src={logo}
-				alt="logo"
-			/>
-			<h1 className={css(styles.heading1)}>
-				School dashboard
-			</h1>
-		</div>
-	);
-};
+  return (
+    <div className={css(headerStyles.appHeader)}>
+      <img src={logo} alt="logo" className={css(headerStyles.appLogo)}/>
+      <h1 className={css(headerStyles.h1)}>School dashboard</h1>
+    </div>
+  )
+}
 
-const styles = StyleSheet.create({
+const headerStyles = StyleSheet.create({
+	h1: {
+		marginLeft: '10rem',
+    float: 'right',
+    flex: 2,
+    '@media (max-width: 900px)': {
+      margin: 'auto'
+    }
+	},
+
 	appHeader: {
 		display: 'flex',
 		flexDirection: 'row',
-		justifyContent: 'left',
+		alignItems: 'center',
+		color: '#E11D3F',
+		borderBottom: '1px solid #E11D3F',
+    width: '100%',
+    boxSizing: 'border-box'
 	},
-	heading1: {
-		margin: 'auto auto auto 0',
-		color: `var(--holberton-red)`,
-		// color: `var(${--holberton-red})`,
-	},
+
+	appLogo: {
+		maxHeight: '200px',
+		maxWidth: '200px',
+    height: 'auto',
+    width: 'auto',
+    flex: 1
+	}
 });
 
 export default Header;

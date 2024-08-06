@@ -1,7 +1,11 @@
-.Login-body {
-  padding: 36px 24px;
+:root {
+    --holberton-red: #e1484c;
 }
 
-.Login-body input {
-  margin: 0 16px 0 8px;
+.App-body {
+    padding: 36px 24px;
+}
+
+.App-body input {
+    margin: 0 16px 0 8px;
 }
